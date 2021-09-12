@@ -10,7 +10,12 @@
             <div class="col-4">
                 <input v-model="marque" type="text" class="form-control mb-2" placeholder="Марка" @focus="dropMessages" />
                 <input v-model="model" type="text" class="form-control mb-2" placeholder="Модель" @focus="dropMessages" />
-                <input v-model="number" type="text" class="form-control mb-2" placeholder="Номер" @focus="dropMessages" />
+                <div class="d-flex mb-2">
+                    <input v-model="number.oneLetter" type="text" class="form-control mr-2" placeholder="С" @focus="dropMessages" />
+                    <input v-model="number.digitsMiddle" type="number" class="form-control mr-2" placeholder="123" @focus="dropMessages" />
+                    <input v-model="number.twoLetters" type="text" class="form-control mr-2" placeholder="МК" @focus="dropMessages" />
+                    <input v-model="number.digitsEnd" type="number" class="form-control" placeholder="78" @focus="dropMessages" />
+                </div>
                 <select v-model="color_id" class="form-control mb-2" @focus="dropMessages">
                     <option 
                         v-for="color in colors" 
@@ -53,7 +58,12 @@ export default {
             marque: '',
             model: '',
             color_id: 1,
-            number: '',
+            number: {
+                oneLetter: '',
+                digitsMiddle: '',
+                twoLetters: '',
+                digitsEnd: ''
+            }, 
             parking_paid: false,
             comment: ''
         }
@@ -81,25 +91,48 @@ export default {
                 this.error = 'Не удалось загрузить цвета - попробуйте обновить страницу'
             })
         },
+        isMarqueAndModelCorrect() {
+            if (
+                this.marque === '' ||
+                this.model === ''
+            ) {
+                this.error = 'Проверьте марку, модель и цвет'
+                return false 
+            }
+            return true
+        },
+        isNumberCorrect() {
+            let regexOneLetter = /^[a-zA-Zа-яА-Я]$/
+            let regexDigitsMiddle = /^\d{3}$/
+            let regexTwoLetters = /^[a-zA-Zа-яА-Я]{2}$/
+            let regexDigitsEnd = /^\d{2,3}$/
+            if (
+                !regexOneLetter.test(this.number.oneLetter) ||
+                !regexDigitsMiddle.test(this.number.digitsMiddle) ||
+                !regexTwoLetters.test(this.number.twoLetters) ||
+                !regexDigitsEnd.test(this.number.digitsEnd)
+            ) {
+                this.error = 'Проверьте номер машины: нужны буква, три цифры, две буквы и две или три цифры'
+                return false
+            }
+            return true
+        },
+        buildNumber() {
+            let numberArr = Object.values(this.number)
+            return numberArr.join(' ')
+        },
         addCar() {
-            console.log({
-                marque: this.marque,
-                model: this.model,
-                color_id: this.color_id,
-                number: this.number,
-                parking_paid: this.parking_paid,
-                comment: this.comment
-            })
+            if (!this.isMarqueAndModelCorrect()) return 
+            if (!this.isNumberCorrect()) return
             axios.post('/api/cars', {
                     marque: this.marque,
                     model: this.model,
                     color_id: this.color_id,
-                    number: this.number,
+                    number: this.buildNumber(),
                     parking_paid: this.parking_paid,
                     comment: this.comment
                 })
                 .then((response)=>{
-                    console.log(response)
                     if (response.data.stored === 'ok') {
                         this.stored = true
                         this.error = ''
@@ -112,7 +145,6 @@ export default {
                     else this.error = "Что-то пошло не так, попробуйте ещё раз"
                 })
                 .catch((error) => {
-                    console.log(error)
                     this.error = error
                 })
         }

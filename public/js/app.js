@@ -1950,6 +1950,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'AddCar',
@@ -1961,7 +1966,12 @@ __webpack_require__.r(__webpack_exports__);
       marque: '',
       model: '',
       color_id: 1,
-      number: '',
+      number: {
+        oneLetter: '',
+        digitsMiddle: '',
+        twoLetters: '',
+        digitsEnd: ''
+      },
       parking_paid: false,
       comment: ''
     };
@@ -1989,27 +1999,44 @@ __webpack_require__.r(__webpack_exports__);
         _this.error = 'Не удалось загрузить цвета - попробуйте обновить страницу';
       });
     },
+    isMarqueAndModelCorrect: function isMarqueAndModelCorrect() {
+      if (this.marque === '' || this.model === '') {
+        this.error = 'Проверьте марку, модель и цвет';
+        return false;
+      }
+
+      return true;
+    },
+    isNumberCorrect: function isNumberCorrect() {
+      var regexOneLetter = /^[a-zA-Zа-яА-Я]$/;
+      var regexDigitsMiddle = /^\d{3}$/;
+      var regexTwoLetters = /^[a-zA-Zа-яА-Я]{2}$/;
+      var regexDigitsEnd = /^\d{2,3}$/;
+
+      if (!regexOneLetter.test(this.number.oneLetter) || !regexDigitsMiddle.test(this.number.digitsMiddle) || !regexTwoLetters.test(this.number.twoLetters) || !regexDigitsEnd.test(this.number.digitsEnd)) {
+        this.error = 'Проверьте номер машины: нужны буква, три цифры, две буквы и две или три цифры';
+        return false;
+      }
+
+      return true;
+    },
+    buildNumber: function buildNumber() {
+      var numberArr = Object.values(this.number);
+      return numberArr.join(' ');
+    },
     addCar: function addCar() {
       var _this2 = this;
 
-      console.log({
-        marque: this.marque,
-        model: this.model,
-        color_id: this.color_id,
-        number: this.number,
-        parking_paid: this.parking_paid,
-        comment: this.comment
-      });
+      if (!this.isMarqueAndModelCorrect()) return;
+      if (!this.isNumberCorrect()) return;
       axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('/api/cars', {
         marque: this.marque,
         model: this.model,
         color_id: this.color_id,
-        number: this.number,
+        number: this.buildNumber(),
         parking_paid: this.parking_paid,
         comment: this.comment
       }).then(function (response) {
-        console.log(response);
-
         if (response.data.stored === 'ok') {
           _this2.stored = true;
           _this2.error = '';
@@ -2020,7 +2047,6 @@ __webpack_require__.r(__webpack_exports__);
           _this2.error = response.data.error;
         } else _this2.error = "Что-то пошло не так, попробуйте ещё раз";
       })["catch"](function (error) {
-        console.log(error);
         _this2.error = error;
       });
     }
@@ -38493,28 +38519,99 @@ var render = function() {
             }
           }),
           _vm._v(" "),
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.number,
-                expression: "number"
-              }
-            ],
-            staticClass: "form-control mb-2",
-            attrs: { type: "text", placeholder: "Номер" },
-            domProps: { value: _vm.number },
-            on: {
-              focus: _vm.dropMessages,
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
+          _c("div", { staticClass: "d-flex mb-2" }, [
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.number.oneLetter,
+                  expression: "number.oneLetter"
                 }
-                _vm.number = $event.target.value
+              ],
+              staticClass: "form-control mr-2",
+              attrs: { type: "text", placeholder: "С" },
+              domProps: { value: _vm.number.oneLetter },
+              on: {
+                focus: _vm.dropMessages,
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.number, "oneLetter", $event.target.value)
+                }
               }
-            }
-          }),
+            }),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.number.digitsMiddle,
+                  expression: "number.digitsMiddle"
+                }
+              ],
+              staticClass: "form-control mr-2",
+              attrs: { type: "number", placeholder: "123" },
+              domProps: { value: _vm.number.digitsMiddle },
+              on: {
+                focus: _vm.dropMessages,
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.number, "digitsMiddle", $event.target.value)
+                }
+              }
+            }),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.number.twoLetters,
+                  expression: "number.twoLetters"
+                }
+              ],
+              staticClass: "form-control mr-2",
+              attrs: { type: "text", placeholder: "МК" },
+              domProps: { value: _vm.number.twoLetters },
+              on: {
+                focus: _vm.dropMessages,
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.number, "twoLetters", $event.target.value)
+                }
+              }
+            }),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.number.digitsEnd,
+                  expression: "number.digitsEnd"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: { type: "number", placeholder: "78" },
+              domProps: { value: _vm.number.digitsEnd },
+              on: {
+                focus: _vm.dropMessages,
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.number, "digitsEnd", $event.target.value)
+                }
+              }
+            })
+          ]),
           _vm._v(" "),
           _c(
             "select",
