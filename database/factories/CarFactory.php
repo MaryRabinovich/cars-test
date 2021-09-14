@@ -4,11 +4,10 @@
 
 use App\Car;
 use Faker\Generator as Faker;
-use App\Data\Cars\AllowedSymbols;
 
 $factory->define(Car::class, function (Faker $faker) {
     
-    $allowedSymbols = AllowedSymbols::getLettersArray();
+    $allowedSymbols = Car::getLettersArray();
 
     return [
         'marque' => $this->faker->word,

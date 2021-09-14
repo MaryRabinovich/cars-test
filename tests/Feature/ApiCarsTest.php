@@ -49,7 +49,7 @@ class ApiCarsTest extends TestCase
             'marque' => 'BMW',
             'model' => '7X',
             'color_id' => 3,
-            'number' => 'A 123 BC 45', // latin
+            'number' => 'А 123 ВС 45', // cyrillic
             'parking_paid' => false,
             'comment' => '',
         ]);
@@ -58,7 +58,7 @@ class ApiCarsTest extends TestCase
             'marque' => 'BMW',
             'model' => '7X',
             'color_id' => 3,
-            'number' => 'А 123 ВС 45', // cyrillic
+            'number' => 'A 123 BC 45', // latin
             'parking_paid' => false,
             'comment' => '',
         ]);
