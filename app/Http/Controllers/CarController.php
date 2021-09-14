@@ -10,7 +10,7 @@ class CarController extends Controller
 {
     public function index()
     {
-        return Car::with('color')->get()->toJson();
+        return Car::with('color')->orderBy('id', 'desc')->get()->toJson();
     }
 
     public function store(Request $request)
